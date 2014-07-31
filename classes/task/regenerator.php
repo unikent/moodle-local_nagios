@@ -23,7 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_connect\task;
+namespace local_nagios\task;
 
 /**
  * Regenerate Nagios's check list.
@@ -35,30 +35,80 @@ class regenerator extends \core\task\adhoc_task
     }
 
     public function execute() {
-        $data = (array)$this->get_custom_data();
+        global $DB;
 
-        // Sync Enrollments.
-        $enrolments = \local_connect\enrolment::get_by("userid", $data['userid'], true);
-        foreach ($enrolments as $enrolment) {
-            $enrolment->create_in_moodle();
+        $old = $this->get_db_checks();
+        $new = $this->get_all_checks();
+
+        // Delete the old entries.
+        foreach ($old as $r) {
+            // Does this check still exist?
+            if (isset($new[$r->component]) && in_array($r->classname, $new[$r->component])) {
+                // Delete from $new.
+                $index = array_search($r->classname, $new[$r->component]);
+                unset($new[$r->component][$index]);
+                continue;
+            }
+
+            $DB->delete_records('nrpe_checks', array(
+                'id' => $r->id
+            ));
         }
 
-        // Sync Group Enrollments.
-        $enrolments = \local_connect\group_enrolment::get_by("userid", $data['userid'], true);
-        foreach ($enrolments as $enrolment) {
-            $enrolment->create_in_moodle();
+        // Create the new entries.
+        $records = array();
+        foreach ($new as $component => $checks) {
+            foreach ($checks as $check) {
+                $records[] = array(
+                    'component' => $component,
+                    'classname' => $check->class,
+                    'enabled' => 1
+                );
+            }
         }
+
+        $DB->insert_records('nrpe_checks', $records);
     }
 
     /**
-     * Setter for $customdata.
-     * @param mixed $customdata (anything that can be handled by json_encode)
+     * Generate a list of all checks in the database.
      */
-    public function set_custom_data($customdata) {
-        if (empty($customdata['userid'])) {
-            throw new \moodle_exception("User ID cannot be empty!");
+    private function get_db_checks() {
+        global $DB;
+        return $DB->get_records('nrpe_checks');
+    }
+
+    /**
+     * Generate a list of all checks in the system.
+     */
+    private function get_all_checks() {
+        $checks = array();
+
+        // Go through every plugin and see if we have a db/nagios.php file.
+        $types = \core_component::get_plugin_types();
+        foreach ($types as $type) {
+            $plugs = \core_component::get_plugin_list($type);
+
+            foreach ($plugs as $plug => $fullplug) {
+                $component = clean_param($type.'_'.$plug, PARAM_COMPONENT);
+
+                if (!is_readable($fullplug . '/db/nagios.php')) {
+                    continue;
+                }
+
+                $nagios = array();
+                include($fullplug . '/db/nagios.php');
+
+                if (!empty($nagios)) {
+                    $checks[$component] = array();
+
+                    foreach ($nagios as $check) {
+                        $checks[$component][] = $check['class'];
+                    }
+                }
+            }
         }
 
-        return parent::set_custom_data($customdata);
+        return $checks;
     }
 }

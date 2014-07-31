@@ -32,7 +32,7 @@ $exitstatus = 0;
 $messages = array();
 
 // Do we need to regenerate our list of NRPE checks?
-\local_nagios\CheckList::check_valid();
+\local_nagios\check_list::check_valid();
 
 // Go through, and execute, all known NRPE checks.
 $tasks = $DB->get_records('nrpe_checks', array(

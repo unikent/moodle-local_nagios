@@ -30,12 +30,14 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * The list of NRPE Checks.
  */
-class CheckList
+class check_list
 {
     /**
      * Check our list, see if we need to make updates.
      */
     public static function check_valid() {
+        global $DB;
+
         $versions = get_config('local_nagios', 'version_info');
         if (!$versions) {
             self::schedule_regen();

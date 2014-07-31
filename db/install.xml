@@ -15,6 +15,9 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
         <KEY NAME="k_classname" TYPE="unique" FIELDS="classname"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="i_enabled" UNIQUE="false" FIELDS="enabled"/>
+      </INDEXES>
     </TABLE>
   </TABLES>
 </XMLDB>

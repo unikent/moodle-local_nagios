@@ -25,3 +25,10 @@
 
 $string['pluginname'] = 'Nagios Manager';
 $string['plugindesc'] = 'The Nagios Manager allows plugins to install NRPE checks and allows admins to configure them through the admin interface. It is an aggregator/manager for NRPE in Moodle.';
+
+$string['nocheck'] = 'No checks have been picked up yet!';
+$string['toggletask'] = 'Toggle this task.';
+
+$string['id'] = 'ID';
+$string['enabled'] = 'Enabled';
+$string['toggle'] = 'Toggle';

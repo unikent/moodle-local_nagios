@@ -14,17 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Version information
- *
- * @package    local_nagios
- * @author     Skylar Kelty <S.Kelty@kent.ac.uk>
- * @copyright  2014 University of Kent
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+defined('MOODLE_INTERNAL') || die;
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'local_nagios';
-$plugin->version   = 2014080100;
-$plugin->requires  = 2014051201;
+if ($hassiteconfig) {
+    $ADMIN->add('localplugins', new admin_externalpage(
+        'nagiosmanager',
+        get_string('pluginname', 'local_nagios'),
+        new \moodle_url("/local/nagios/index.php")
+    ));
+}

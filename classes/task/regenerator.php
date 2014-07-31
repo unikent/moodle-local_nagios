@@ -68,6 +68,27 @@ class regenerator extends \core\task\adhoc_task
         }
 
         $DB->insert_records('nrpe_checks', $records);
+
+        // Update our config.
+        $this->update_config();
+    }
+
+    /**
+     * Update config.
+     */
+    private function update_config() {
+        global $DB;
+
+        $versions = array();
+
+        $plugins = $DB->get_records('config_plugins', array(
+            'name' => 'version'
+        ));
+        foreach ($plugins as $plugin) {
+            $versions[$plugin->plugin] = $plugin->value;
+        }
+
+        set_config('version_info', json_encode($versions), 'local_nagios');
     }
 
     /**

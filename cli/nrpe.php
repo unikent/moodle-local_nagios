@@ -30,3 +30,5 @@ require(dirname(__FILE__) . '/../../../config.php');
 
 // Do we need to regenerate our list of NRPE checks?
 \local_nagios\CheckList::check_valid();
+
+// Go through, and execute, all known NRPE checks.

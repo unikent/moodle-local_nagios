@@ -28,7 +28,51 @@ define('NRPE_SCRIPT', true);
 
 require(dirname(__FILE__) . '/../../../config.php');
 
+$exitstatus = 0;
+$messages = array();
+
 // Do we need to regenerate our list of NRPE checks?
 \local_nagios\CheckList::check_valid();
 
 // Go through, and execute, all known NRPE checks.
+$tasks = $DB->get_records('nrpe_checks', array(
+    'enabled' => 1
+));
+foreach ($tasks as $task) {
+    $class = $task->classname;
+
+    if (!class_exists($class)) {
+        continue;
+    }
+
+    $obj = new $class();
+    $obj->execute();
+    $status = $obj->get_status();
+
+    if ($status == 1 || ($status == 2 && $exitstatus == 0)) {
+        $exitstatus = $status;
+    }
+
+    $messages = array_merge($messages, $obj->get_messages());
+}
+
+if (empty($messages)) {
+    switch ($exitstatus) {
+        case 1:
+            $messages[] = 'UNKERR';
+        break;
+
+        case 2:
+            $messages[] = 'UNKWARN';
+        break;
+
+        case 0:
+        default:
+            $messages[] = 'OK';
+        break;
+    }
+}
+
+echo implode(', ', $messages);
+
+exit($exitstatus);

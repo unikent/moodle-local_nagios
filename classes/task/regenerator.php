@@ -58,10 +58,10 @@ class regenerator extends \core\task\adhoc_task
         // Create the new entries.
         $records = array();
         foreach ($new as $component => $checks) {
-            foreach ($checks as $check) {
+            foreach ($checks as $classname) {
                 $records[] = array(
                     'component' => $component,
-                    'classname' => $check->class,
+                    'classname' => $classname,
                     'enabled' => 1
                 );
             }
@@ -107,7 +107,7 @@ class regenerator extends \core\task\adhoc_task
 
         // Go through every plugin and see if we have a db/nagios.php file.
         $types = \core_component::get_plugin_types();
-        foreach ($types as $type) {
+        foreach ($types as $type => $fulltype) {
             $plugs = \core_component::get_plugin_list($type);
 
             foreach ($plugs as $plug => $fullplug) {
@@ -124,7 +124,14 @@ class regenerator extends \core\task\adhoc_task
                     $checks[$component] = array();
 
                     foreach ($nagios as $check) {
-                        $checks[$component][] = $check['class'];
+                        if (isset($check['classname'])) {
+                            $classname = $check['classname'];
+                            if (strpos($classname, '/') !== 0) {
+                                $classname = '\\' . $classname;
+                            }
+
+                            $checks[$component][] = $classname;
+                        }
                     }
                 }
             }

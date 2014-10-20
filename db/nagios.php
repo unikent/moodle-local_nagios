@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * Check definitions for Nagios
  *
  * @package    local_nagios
  * @author     Skylar Kelty <S.Kelty@kent.ac.uk>
@@ -23,8 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->component = 'local_nagios';
-$plugin->version   = 2014102000;
-$plugin->requires  = 2014051201;
+$nagios = array(
+    array(
+        'classname' => 'local_nagios\checks\cron_check'
+    )
+);

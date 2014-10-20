@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version information
+ * NRPE check aggregator.
  *
  * @package    local_nagios
  * @author     Skylar Kelty <S.Kelty@kent.ac.uk>
@@ -23,8 +23,24 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+namespace local_nagios\checks;
 
-$plugin->component = 'local_nagios';
-$plugin->version   = 2014102000;
-$plugin->requires  = 2014051201;
+/**
+ * Check cron is running okay.
+ */
+class cron_check extends \local_nagios\base_check
+{
+    public function execute() {
+        global $DB;
+
+        $failedtasks = $DB->count_records_select('task_scheduled', 'faildelay > 0');
+        if ($failedtasks > 0) {
+            $this->error("{$failedtasks} scheduled tasks failing.");
+        }
+
+        $failedtasks = $DB->count_records_select('task_adhoc', 'faildelay > 0');
+        if ($failedtasks > 0) {
+            $this->error("{$failedtasks} adhoc tasks failing.");
+        }
+    }
+}

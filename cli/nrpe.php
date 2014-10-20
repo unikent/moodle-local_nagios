@@ -59,11 +59,11 @@ foreach ($tasks as $task) {
 if (empty($messages)) {
     switch ($exitstatus) {
         case 1:
-            $messages[] = 'UNKERR';
+            $messages[] = 'UNK_ERR';
         break;
 
         case 2:
-            $messages[] = 'UNKWARN';
+            $messages[] = 'UNK_WARN';
         break;
 
         case 0:
@@ -73,6 +73,9 @@ if (empty($messages)) {
     }
 }
 
+if ($exitstatus > 0) {
+    echo 'NOK ';
+}
 echo implode(', ', $messages);
 
 exit($exitstatus);

@@ -26,5 +26,8 @@
 $nagios = array(
     array(
         'classname' => 'local_nagios\checks\cron_check'
+    ),
+    array(
+        'classname' => 'local_nagios\checks\events_queue_check'
     )
 );

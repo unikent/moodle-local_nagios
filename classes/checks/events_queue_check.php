@@ -33,12 +33,12 @@ class events_queue_check extends \local_nagios\base_check
     public function execute() {
         global $DB;
 
-        $queuelength = $DB->count_records_select('events_queue', 'status = 0');
+        $queuelength = $DB->count_records_select('events_queue_handlers', 'status = 0');
         if ($queuelength > 25) {
             $this->error("{$queuelength} entries in events queue.");
         }
 
-        $queuelength = $DB->count_records_select('events_queue', 'status > 0');
+        $queuelength = $DB->count_records_select('events_queue_handlers', 'status > 0');
         if ($queuelength > 0) {
             $this->warning("{$queuelength} entries in events queue with status > 0.");
         }

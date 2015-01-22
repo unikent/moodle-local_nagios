@@ -23,22 +23,23 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace local_nagios\task;
+namespace local_nagios;
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
- * Regenerate Nagios's check list.
+ * The list of NRPE Checks.
  */
-class regenerator extends \core\task\adhoc_task
+class Core
 {
-    public function get_component() {
-        return 'local_nagios';
-    }
-
-    public function execute() {
+    /**
+     * Regenerate the list of NRPE checks.
+     */
+    public static function regenerate_list() {
         global $DB;
 
-        $old = $this->get_db_checks();
-        $new = $this->get_all_checks();
+        $old = $DB->get_records('nrpe_checks');
+        $new = self::get_all_checks();
 
         // Delete the old entries.
         foreach ($old as $r) {
@@ -68,41 +69,12 @@ class regenerator extends \core\task\adhoc_task
         }
 
         $DB->insert_records('nrpe_checks', $records);
-
-        // Update our config.
-        $this->update_config();
-    }
-
-    /**
-     * Update config.
-     */
-    private function update_config() {
-        global $DB;
-
-        $versions = array();
-
-        $plugins = $DB->get_records('config_plugins', array(
-            'name' => 'version'
-        ));
-        foreach ($plugins as $plugin) {
-            $versions[$plugin->plugin] = $plugin->value;
-        }
-
-        set_config('version_info', json_encode($versions), 'local_nagios');
-    }
-
-    /**
-     * Generate a list of all checks in the database.
-     */
-    private function get_db_checks() {
-        global $DB;
-        return $DB->get_records('nrpe_checks');
     }
 
     /**
      * Generate a list of all checks in the system.
      */
-    private function get_all_checks() {
+    private static function get_all_checks() {
         $checks = array();
 
         // Go through every plugin and see if we have a db/nagios.php file.

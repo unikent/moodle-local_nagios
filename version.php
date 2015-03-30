@@ -19,12 +19,12 @@
  *
  * @package    local_nagios
  * @author     Skylar Kelty <S.Kelty@kent.ac.uk>
- * @copyright  2014 University of Kent
+ * @copyright  2015 University of Kent
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_nagios';
-$plugin->version   = 2014103000;
+$plugin->version   = 2015033000;
 $plugin->requires  = 2014051201;

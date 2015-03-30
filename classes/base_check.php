@@ -43,7 +43,7 @@ abstract class base_check
     }
 
     /**
-     * Set an warning.
+     * Set a warning.
      */
     public function warning($message) {
         $this->status = $this->status === 1 ? 1 : 2;

@@ -33,7 +33,7 @@ class cron_check extends \local_nagios\base_check
     public function execute() {
         global $DB;
 
-        $failedtasks = $DB->count_records_select('task_scheduled', 'faildelay > 0');
+        $failedtasks = $DB->count_records_select('task_scheduled', 'faildelay > 0 AND disabled = 0');
         if ($failedtasks > 0) {
             $this->error("{$failedtasks} scheduled tasks failing.");
         }

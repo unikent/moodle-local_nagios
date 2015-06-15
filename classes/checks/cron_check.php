@@ -42,5 +42,9 @@ class cron_check extends \local_nagios\base_check
         if ($failedtasks > 0) {
             $this->error("{$failedtasks} adhoc tasks failing.");
         }
+
+        $tasks = $DB->count_records_select('task_adhoc');
+        $this->set_perf_var('adhoc_tasks', $tasks);
+        $this->set_perf_var('failed_adhoc_tasks', $failedtasks);
     }
 }

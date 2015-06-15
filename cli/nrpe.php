@@ -83,7 +83,7 @@ if ($exitstatus > 0) {
 $perfstr = '';
 if (!empty($perfdata)) {
     $perfstr = ' | ';
-    $perfstr .= implode(';', $perfdata);
+    $perfstr .= implode(',', $perfdata);
 }
 
 echo implode(', ', $messages) . $perfstr;

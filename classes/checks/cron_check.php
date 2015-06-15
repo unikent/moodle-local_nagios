@@ -33,6 +33,7 @@ class cron_check extends \local_nagios\base_check
     public function execute() {
         global $DB;
 
+        // Count errored tasks.
         $failedtasks = $DB->count_records_select('task_scheduled', 'faildelay > 0 AND disabled = 0');
         if ($failedtasks > 0) {
             $this->error("{$failedtasks} scheduled tasks failing.");
@@ -43,8 +44,20 @@ class cron_check extends \local_nagios\base_check
             $this->error("{$failedtasks} adhoc tasks failing.");
         }
 
-        $tasks = $DB->count_records_select('task_adhoc');
-        $this->set_perf_var('adhoc_tasks', $tasks);
         $this->set_perf_var('failed_adhoc_tasks', $failedtasks);
+
+        // Now count all tasks.
+        $count = $DB->count_records('task_adhoc');
+
+        if ($count > 50) {
+            $this->error("{$count} adhoc tasks in the queue!");
+            return;
+        }
+
+        if ($count > 25) {
+            $this->warn("{$count} adhoc tasks in the queue!");
+        }
+
+        $this->set_perf_var('adhoc_tasks', $count);
     }
 }

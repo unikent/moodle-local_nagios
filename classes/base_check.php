@@ -29,6 +29,9 @@ abstract class base_check
     /** Our current set of messages */
     protected $messages = array();
 
+    /** Our set of performance data */
+    protected $perfdata = array();
+
     /**
      * Execute the check.
      */
@@ -62,5 +65,30 @@ abstract class base_check
      */
     public function get_messages() {
         return $this->messages;
+    }
+
+    /**
+     * Set a performance variable.
+     */
+    public function set_perf_var($name, $var) {
+        $this->perfdata[$name] = $var;
+    }
+
+    /**
+     * Get a performance variable.
+     */
+    public function get_perf_var($name) {
+        if (isset($this->perfdata[$name])) {
+            return $this->perfdata[$name];
+        }
+
+        return null;
+    }
+
+    /**
+     * Return all perf vars.
+     */
+    public function get_perfdata() {
+        return $this->perfdata;
     }
 }

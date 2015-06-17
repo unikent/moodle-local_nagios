@@ -30,6 +30,7 @@ require(dirname(__FILE__) . '/../../../config.php');
 
 $exitstatus = 0;
 $messages = array();
+$perfdata = array();
 
 // Go through, and execute, all known NRPE checks.
 $tasks = $DB->get_records('nrpe_checks', array(
@@ -51,6 +52,11 @@ foreach ($tasks as $task) {
     }
 
     $messages = array_merge($messages, $obj->get_messages());
+
+    $objperf = $obj->get_perfdata();
+    foreach ($objperf as $name => $var) {
+        $perfdata[] = "{$name}={$var}";
+    }
 }
 
 if (empty($messages)) {
@@ -73,6 +79,13 @@ if (empty($messages)) {
 if ($exitstatus > 0) {
     echo 'NOK ';
 }
-echo implode(', ', $messages);
+
+$perfstr = '';
+if (!empty($perfdata)) {
+    $perfstr = ' | ';
+    $perfstr .= implode(', ', $perfdata);
+}
+
+echo implode(', ', $messages) . $perfstr;
 
 exit($exitstatus);

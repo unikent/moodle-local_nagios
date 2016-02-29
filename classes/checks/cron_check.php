@@ -44,8 +44,6 @@ class cron_check extends \local_nagios\base_check
             $this->error("{$failedtasks} adhoc tasks failing.");
         }
 
-        $this->set_perf_var('failed_adhoc_tasks', $failedtasks);
-
         // Now count all tasks.
         $count = $DB->count_records('task_adhoc');
 
@@ -57,7 +55,5 @@ class cron_check extends \local_nagios\base_check
         if ($count > 25) {
             $this->warn("{$count} adhoc tasks in the queue!");
         }
-
-        $this->set_perf_var('adhoc_tasks', $count);
     }
 }

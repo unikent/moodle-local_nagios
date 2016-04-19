@@ -80,17 +80,12 @@ class Core
         // Go through every plugin and see if we have a db/nagios.php file.
         $types = \core_component::get_plugin_types();
         foreach ($types as $type => $fulltype) {
-            $plugs = \core_component::get_plugin_list($type);
-
-            foreach ($plugs as $plug => $fullplug) {
-                $component = clean_param($type.'_'.$plug, PARAM_COMPONENT);
-
-                if (!is_readable($fullplug . '/db/nagios.php')) {
-                    continue;
-                }
+            $plugins = \core_component::get_plugin_list_with_file($type, 'db/nagios.php');
+            foreach ($plugins as $plugin => $fullplugin) {
+                $component = clean_param("{$type}_{$plugin}", PARAM_COMPONENT);
 
                 $nagios = array();
-                include($fullplug . '/db/nagios.php');
+                include($fullplugin . '/db/nagios.php');
 
                 if (!empty($nagios)) {
                     $checks[$component] = array();

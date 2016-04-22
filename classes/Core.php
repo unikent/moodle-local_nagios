@@ -81,11 +81,11 @@ class Core
         $types = \core_component::get_plugin_types();
         foreach ($types as $type => $fulltype) {
             $plugins = \core_component::get_plugin_list_with_file($type, 'db/nagios.php');
-            foreach ($plugins as $plugin => $fullplugin) {
+            foreach ($plugins as $plugin => $filename) {
                 $component = clean_param("{$type}_{$plugin}", PARAM_COMPONENT);
 
                 $nagios = array();
-                include($fullplugin . '/db/nagios.php');
+                include($filename);
 
                 if (!empty($nagios)) {
                     $checks[$component] = array();

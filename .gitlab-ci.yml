@@ -1,0 +1,61 @@
+image: skylarkelty/docker-gitlab
+
+cache:
+    paths:
+        - $HOME/.composer/cache
+
+services:
+    - mysql:latest
+
+variables:
+    MYSQL_ROOT_PASSWORD: "moodle_ci_password"
+
+stages:
+    - checks
+
+before_script:
+    - export MOODLE_BRANCH=MOODLE_31_STABLE
+    - export DB=mysqli
+    - export PLUGIN=`pwd`
+    - cd ../..
+    - rm -rf tmpbuild
+    - mkdir tmpbuild
+    - cd tmpbuild
+    - export TMPBUILD=`pwd`
+    - curl -sS https://getcomposer.org/installer | php
+    - php composer.phar create-project -n --no-dev --prefer-dist moodlerooms/moodle-plugin-ci ci ^1
+    - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
+    - moodle-plugin-ci install --plugin $PLUGIN --db-type mysqli --db-user root --db-pass moodle_ci_password --db-name moodle_ci --db-host mysql
+
+after_script:
+    - rm -rf $TMPBUILD
+
+linter:
+    stage: checks
+    script:
+        - moodle-plugin-ci phplint
+
+copypastedetect:
+    stage: checks
+    script:
+        - moodle-plugin-ci phpcpd
+
+messdetect:
+    stage: checks
+    script:
+        - moodle-plugin-ci phpmd
+
+codechecker:
+    stage: checks
+    script:
+        - moodle-plugin-ci codechecker
+
+shifter:
+    stage: checks
+    script:
+        - moodle-plugin-ci shifter
+
+validate:
+    stage: checks
+    script:
+        - moodle-plugin-ci validate

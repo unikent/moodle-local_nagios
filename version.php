@@ -26,5 +26,5 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'local_nagios';
-$plugin->version   = 2015060500;
+$plugin->version   = 2017050300;
 $plugin->requires  = 2014051201;

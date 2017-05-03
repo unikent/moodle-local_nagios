@@ -24,10 +24,12 @@
  */
 
 $capabilities = array(
-    'mod/nagios:configure' => array(
+    'local/nagios:configure' => array(
         'riskbitmask' => RISK_CONFIG,
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array()
+        'archetypes' => array(
+            'manager' => CAP_ALLOW,
+        )
     )
 );
